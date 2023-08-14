@@ -1,2 +1,2 @@
 # solrwayback-branding
-Contains branding for Solrwayback
+Contains files for adapting Solrwayback to the Norwegian Web Archive, such as logo, Norwegian help text, etc.
