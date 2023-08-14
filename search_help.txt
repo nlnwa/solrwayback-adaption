@@ -1,0 +1,279 @@
+<h1>Søkesyntaks</h1>
+
+<h3> Logiske operatorer </h3>
+Søket støtter tre logiske operatorer: Disse må angis i store bokstaver, hvis ikke vurderes de som vanlige søkeord. 
+<table border='1'>
+<tr>
+<td> Operator </td>
+<td> Eksempel </td>
+<td> Beskrivelse </td>
+</tr>
+<tr>
+ <td>AND</td>
+ <td><b>Støre AND Ukraina</b></td>
+ <td> Returnerer dokumenter der begge termer forekommer. <br> Samme som: Støre Ukraina <br> AND er default operator mellom termer hvis annet ikke er spesifisert</td>
+</tr>
+<tr>
+ <td>OR</td>
+ <td><b>Støre OR Ukraina</b></td>
+ <td>Returnerer treff der minst ett av ordene forekommer</td>
+</tr>
+<tr>
+ <td>NOT</td>
+ <td><b>Støre NOT Ukraina</b></td>
+ <td>Gir treff i dokumenter som inneholder Støre, og der Ukraina ikke forekommer.<br> Alternativ syntaks: <b>Støre -Ukraina</b> </td>
+</tr>
+</table>
+
+<h3>Parenteser for ulike operatorer</h3>
+Hvis du kombinerer ulike operatorer i søket settes søkeordene i (parentes):<br>
+Eksempel:<b> (Støre AND Ukraina) OR (Huitfeldt)<br> </b>
+Dette returnerer også treff på 'Hutifeldt'.
+
+<h3>Bruk felt til å redusere antall resultater</h3>
+Hvis du bare vil ha resultater fra et gitt domene kan du definere dette i søket. Her er noen eksempler: <br>
+<b>domain:regjeringen.no Støre Ukraina</b> (Samme som domain:regjeringen.no AND Støre AND Ukraina) <br>
+<b>source_file_path:"/eventUkraina2022/20220308122459-0037.warc.gz"</b> (sitattergn er påkrevd for pga. spesialtegnet /). Viser bare resultater fra denne WARC-fila.<br>
+<b>content_type_norm:"image"</b> Bare filer klassifisert som bilder. <br>  
+<b>domain:regjeringen.no AND crawl_year:2022 </b><br>	
+
+<h3>Søke etter fraser</h3>
+For å søke etter fraser setter du søkeordene i "anførselstegn".
+<b> "Støre og Zelenskyj" </b> gir bare match i dokumenter der ordene opptrer inntil hverandre i en tekst.<br>
+Du kan benytte tilde `~` for å få treff på ord som opptrer nær hverandre. 
+<b> "Støre Zelenskyj"~4</b> søker etter dokumenter der ordene opptrer med inntil 4 andre ord mellom.<br>
+
+<h3>Relaterte dokumenter</h3>
+SolrIndex og Apache indekserer også alle lenker i html-filer. Dermed er det mulig å søke etter alle dokumenter som lenker til en bestemt ressurs.
+<b> links:"http://snl.no/ukraina"</b> Finner alle html-sider som lenker til denne ressursen. Pga. spesialtegn i URL må feltverdiene være i anførselstegn.<br> 
+Siden alle lenker er normalisert og må matche normalisert URL kan du bruke URL-søk til til å finne normalisert form for hvilken som helst URL.<br>
+
+
+<h3>Jokertegn</h3>
+Tegnene * og ? kan brukes som jokertegn i termer.<br>
+Eksempel:<br>
+<b>krigs*</b> will gi treff på all ord som begynner med krigs, slik som "krigshandlinger", "krigsforbryter", etc.<br>
+<b> Zelensk?j </b> vil gi treff på både Zelenskyj og Zelenskij. Det er tillatt med flere ? i samme rad, der hver ? matcher ett tegn.<br>
+Jokertegnet ? særlig nyttig for å finne vanlige skrivefeil, eller der det finnes alternative skriveformer.<br>
+Advarsel: Ikke bruk jokertegn i starten av et ord (prefix), da dette kan ta for lang tid å løse. 
+
+<h3>Søke i spenn</h3>
+Hvis feltets verdi er nummerisk eller timestamp kan du angi et spenn som dokumentene må matche.<br>
+Eksempler:
+<b>content_type_norm:image AND content_length:[1000000 TO 10000000]</b> Søker bare etter bilder mellom 1Mb og 10Mb <br>
+<b>crawl_date:[2022-03-01T00:00:00Z TO 2022-03-31T23:59:59Z]</b> Søker bare etter resultater høstet i mars 2022.<br>
+<b>TO</b> må angis i store bokstaver.  
+ 
+ <h3>Standardfelt</h3>
+ 
+ Hvis du søker uten å bruke felt prefiks vil du bare søke i definerte standard søkefelt.<br>
+ Disse er bare de mest åpenbare feltene for tekstsøk, som content_text, title, url osv. <br>
+ Standard søkefelt skiller ikke mellom store og små bokstaaver, mens noen andre felt er sensitive for dette.
+ Bruk derfor alltid felt prefiks søk hvis du også ønsker å søke i ikke-standard søkefelt.
+ Eksempel: <b>content_type_served:"image/jpeg"</b>
+
+<h3>Feltbeskrivelser</h3>
+Dette er en beskrivelse av noen av de viktigste feltene, men er ikke uttømmende.
+
+<table border='1'>
+<th>
+<tr>
+ <td>Felt</td> 
+ <td>Flerverdier</td> 
+ <td>Type</td> 
+ <td>Beskrivelse</td>
+ </tr>
+</th>
+
+<tr>
+<td>id</td>
+<td>no</td>
+<td>string</td>
+<td>Unik identifikator for hvert dokument.</td>
+</tr>
+
+<tr>
+<td>index_time</td>
+<td>no</td>
+<td>date</td>
+<td>Tidspunkt for indeksering av WARC-fil</td>
+</tr>
+
+<tr>
+<td>author</td>
+<td>yes</td>
+<td>string</td>
+<td>Derivert fra Author meta-data (word, html, pdf, jpg, etc.)</td>
+</tr>
+
+<tr>
+<td>description</td>
+<td>no</td>
+<td>string</td>
+<td>Derivert fra description meta-data (word, html, pdf, jpg, etc.)</td>
+</tr>
+
+<tr>
+<td>title</td>
+<td>no</td>
+<td>string</td>
+<td>Derivert fra title meta-data</td>
+</tr>
+
+<tr>
+<td>content_language</td>
+<td>no</td>
+<td>string</td>
+<td>Språk (gjettet av Apache Tika)</td>
+</tr>
+
+<tr>
+<td>content_length</td>
+<td>no</td>
+<td>int</td>
+<td>Innholdslengde på payload fra server </td>
+</tr>
+
+<tr>
+<td>content_text_length</td>
+<td>no</td>
+<td>int</td>
+<td>Innholdslengde av ekstrahert tekst</td>
+</tr>
+
+<tr>
+<td>content_type_norm</td>
+<td>no</td>
+<td>string</td>
+<td>Innholdstype gjettet av Tika. Mulige verdier: html, image, pdf, audio, video, word, powerpoint, excel, text, other</td>
+</tr>
+
+<tr>
+<td>type</td>
+<td>no</td>
+<td>string</td>
+<td>Nesten det samme som content_type_norm. Mer menneskelige navn og færre verdier: Web Page, Image, Other, Document, Audio, Video, Presentation, Data</td>
+</tr>
+
+<tr>
+<td>hash</td>
+<td>no</td>
+<td>string</td>
+<td>En hash verdi av payload. Identisk payload vil ha identisk hash</td>
+</tr>
+
+<tr>
+<td>crawl_date</td>
+<td>no</td>
+<td>date</td>
+<td>Tidspunkt for høsting av url. Liknende felt: crawl_year_month_day, crawl_year_month, crawl_year</td>
+</tr>
+
+<tr>
+<td>url</td>
+<td>no</td>
+<td>string</td>
+<td>Eksakt url fra innhøsteren som skapte WARC-filen</td>
+</tr>
+
+<tr>
+<td>url_norm</td>
+<td>no</td>
+<td>string</td>
+<td>Normalisert versjon av url felt. Små bokstaver, https skrives om til http. Finner også unik representasjon av ulike encodinger. Fjerner også noen predefinerte navn på parametre, slik som session-id etc. Dette feltet er veldig viktig for playback i SolrWayback.</td>
+</tr>
+
+<tr>
+<td>domain</td>
+<td>no</td>
+<td>string</td>
+<td>Domene for url. Eksempel: nb.no</td>
+</tr>
+
+<tr>
+<td>host</td>
+<td>no</td>
+<td>string</td>
+<td>Tjener i url, inkluderer subdomene. Eksempel: nettarkivet.nb.no</td>
+</tr>
+
+<tr>
+<td>public_suffic</td>
+<td>no</td>
+<td>string</td>
+<td>
+Toppnivådomene i url. Eksempel: no, org, co.uk, com </td>
+</tr>
+
+<tr>
+<td>resourcename</td>
+<td>no</td>
+<td>string</td>
+<td>Siste del av url etter '/' med query-parametre. Eksempel: index.html , cats.jpg&size=100</td>
+</tr>
+
+<tr>
+<td>image_size</td>
+<td>no</td>
+<td>long</td>
+<td>Størrelse på bildet i piksler. Liknende felt er image_height and image_width</td>
+</tr>
+
+<tr>
+<td>links_images</td>
+<td>yes</td>
+<td>string</td>
+<td> Lenker for all bilde-elementer i en HTML-side.</td>
+</tr>
+
+<tr>
+<td>links</td>
+<td>yes</td>
+<td>string</td>
+<td> Alle lenker fra 'a href'-elementer på en HTML-side. Liknende felt: links_domains, links_hosts</td>
+</tr>
+
+<tr>
+<td>links_norm</td>
+<td>yes</td>
+<td>string</td>
+<td>Samme som lenke-feltene, men med normaliserte verdier</td>
+</tr>
+
+<tr>
+<td>server</td>
+<td>yes</td>
+<td>string</td>
+<td>Verdi for Server feltet i HTTP header</td>
+</tr>
+
+<tr>
+<td>statuscode</td>
+<td>no</td>
+<td>int</td>
+<td>Statuskode i HTTP header. </td>
+</tr>
+
+<tr>
+<td>warc_ip</td>
+<td>no</td>
+<td>string</td>
+<td>Serverens IP-adresse. Derivert fra metadata-feltet WARC-IP-Address i WARC-header. </td>
+</tr>
+
+<tr>
+<td>source_file_path</td>
+<td>no</td>
+<td>string</td>
+<td>Full filsti til WARC-fila der ressursen kommer fra. Feltet source_file_offset gir offset for ressursen i den WARC-fila</td>
+</tr>
+
+
+<tr>
+<td>source_file</td>
+<td>no</td>
+<td>string</td>
+<td>Filnavnet for WARC-fila uten fullstendig filsti. Følsom for små og store bokstaver</td>
+</tr>
+
+</table>
