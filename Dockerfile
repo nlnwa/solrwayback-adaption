@@ -18,8 +18,12 @@
 # http://localhost:8983/solr/#/
 
 # If you have some WARC files you want to index, you can index them with the following commands:
-# WARC_FILES=$(find /warc-collection/ -type f)
-# ./unpacked-bundle/solrwayback_package_$SOLRWAYBACK_VERSION/indexing/warc-indexer.sh $WARC_FILES
+# python3 index_it.py --collection <collection> --number-of-threads <threads> \
+#     --warc-file-directory /warc-collection/<path/to/collection>
+# <path/to/collection> must contain WARC files that all belong to the same collection
+# Note: all of the WARC files in the directory will be indexed with the given collection
+# Note: both neither solr or tomcat should be running when you call this command
+# Note: index_it.py will stop both solr and tomcat on exit
 
 FROM ubuntu:22.04
 
@@ -28,7 +32,7 @@ ENV APACHE_TOMCAT_VERSION 8.5.60
 ENV SOLR_VERSION 7.7.3
 
 RUN apt-get update --assume-yes --quiet
-RUN apt-get install wget unzip --assume-yes --quiet
+RUN apt-get install wget unzip python3 --assume-yes --quiet
 
 # Install dependencies
 RUN apt-get install default-jre lsof curl --assume-yes --quiet
@@ -59,3 +63,5 @@ RUN unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/apache-tomcat-${A
 # Verify that solr works
 RUN unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/solr-${SOLR_VERSION}/bin/solr start
 RUN unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/solr-${SOLR_VERSION}/bin/solr stop -all
+
+COPY index_it.py .
