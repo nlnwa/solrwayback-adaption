@@ -3,7 +3,7 @@
 # docker build . --tag solrwayback
 
 # To run SolrWayback, you need to launch it with the following parameters
-# docker run --publish 8080:8080 --publish 8983:8983  --volume <path/to/WARCs>:/host_dir --tty --interactive solrwayback bash
+# docker run --publish 8080:8080 --publish 8983:8983  --volume <path/to/WARCs>:/warc-collection --tty --interactive solrwayback bash
 # where <path/to/WARCs> is a file path that only contains WARC files and directories.
 
 # When the container is running, run the following commands to start Solr and Tomcat:
@@ -18,7 +18,7 @@
 # http://localhost:8983/solr/#/
 
 # If you have some WARC files you want to index, you can index them with the following commands:
-# WARC_FILES=$(find /host_dir/ -type f)
+# WARC_FILES=$(find /warc-collection/ -type f)
 # ./unpacked-bundle/solrwayback_package_$SOLRWAYBACK_VERSION/indexing/warc-indexer.sh $WARC_FILES
 
 FROM ubuntu:22.04
