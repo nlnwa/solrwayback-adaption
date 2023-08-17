@@ -62,4 +62,5 @@ RUN unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/apache-tomcat-${A
     && unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/solr-${SOLR_VERSION}/bin/solr stop -all \
     && unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/apache-tomcat-${APACHE_TOMCAT_VERSION}/bin/shutdown.sh
 
+COPY --chown=builder nb_logo_desktop_red.svg .
 COPY index_it.py .
