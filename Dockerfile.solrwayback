@@ -1,0 +1,41 @@
+# This dockerfile configures a vanilla tomcat container
+# with solrwayback installed and configured with properties
+# from solrwayback bundle.
+#
+# See https://hub.docker.com/_/tomcat for details on how
+# to configure tomcat.
+
+ARG SOLRWAYBACK_VERSION=4.4.2
+ARG SOLRWAYBACK_CHECKSUM=41c1f7ecebc15aade23eb8735db2ab6d
+ARG SOLRWAYBACK_TOMCAT_VERSION=8.5.60
+ARG TOMCAT_TAG=8.5-jdk8-temurin-jammy
+
+FROM busybox as solrwayback
+
+WORKDIR /build
+
+ARG SOLRWAYBACK_VERSION
+ARG SOLRWAYBACK_CHECKSUM
+ARG SOLRWAYBACK_RELEASE_URL=https://github.com/netarchivesuite/solrwayback/releases/download/${SOLRWAYBACK_VERSION}/solrwayback_package_${SOLRWAYBACK_VERSION}.zip
+
+RUN wget -q -O bundle.zip ${SOLRWAYBACK_RELEASE_URL} \
+&& echo "${SOLRWAYBACK_CHECKSUM}  bundle.zip" | md5sum -c - \
+&& unzip bundle.zip \
+&& mv solrwayback_package_${SOLRWAYBACK_VERSION} /app \
+&& rm bundle.zip
+
+
+FROM tomcat:${TOMCAT_TAG}
+
+ARG SOLRWAYBACK_TOMCAT_VERSION
+
+# CATALINA_HOME is the folder where catalina is installed.
+# The main component of tomcat is called catalina.
+# CATALINA_HOME is set by the tomcat image.
+
+# Copy solrwayback war file to the webapps folder of tomcat.
+COPY --from=solrwayback /app/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback.war ${CATALINA_HOME}/webapps/solrwayback.war
+
+# Copy solrwayback properties files to the ${HOME} folder of the tomcat user which is /root.
+# This is the folder where solrwayback looks for properties files.
+COPY --from=solrwayback /app/properties /root
