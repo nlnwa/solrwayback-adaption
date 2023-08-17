@@ -53,8 +53,8 @@ RUN unzip -q solrwayback-zip/bundle.zip -d unpacked-bundle
 RUN rm --recursive solrwayback-zip
 
 # Set up SolrWayback configuration
-RUN cp unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/properties/solrwayback.properties .
-RUN cp unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/properties/solrwaybackweb.properties .
+COPY --chown=builder solrwayback.properties .
+COPY --chown=builder solrwaybackweb.properties .
 
 # Verify that apache-tomcat works
 RUN unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/apache-tomcat-${APACHE_TOMCAT_VERSION}/bin/startup.sh
