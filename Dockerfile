@@ -64,3 +64,4 @@ RUN unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/apache-tomcat-${A
 
 COPY --chown=builder nb_logo_desktop_red.svg .
 COPY index_it.py .
+COPY --chown=builder config3.conf unpacked-bundle/solrwayback_package_${SOLRWAYBACK_VERSION}/indexing/config3.conf
