@@ -1,0 +1,31 @@
+# This dockerfile configures a vanilla solr 7.7.3 configured with
+# a solrwayback core.
+#
+# See https://solr.apache.org/guide/7_7/solr-cores-and-solr-xml.html
+# for details on how solr cores are configured.
+
+ARG SOLRWAYBACK_VERSION=4.4.2
+ARG SOLRWAYBACK_CHECKSUM=41c1f7ecebc15aade23eb8735db2ab6d
+ARG SOLR_VERSION=7.7.3
+
+FROM busybox as solrwayback
+
+WORKDIR /build
+
+ARG SOLRWAYBACK_VERSION
+ARG SOLRWAYBACK_CHECKSUM
+ARG SOLRWAYBACK_RELEASE_URL=https://github.com/netarchivesuite/solrwayback/releases/download/${SOLRWAYBACK_VERSION}/solrwayback_package_${SOLRWAYBACK_VERSION}.zip
+
+RUN wget -q -O bundle.zip ${SOLRWAYBACK_RELEASE_URL} \
+&& echo "${SOLRWAYBACK_CHECKSUM}  bundle.zip" | md5sum -c - \
+&& unzip bundle.zip \
+&& mv solrwayback_package_${SOLRWAYBACK_VERSION} /app \
+&& rm bundle.zip
+
+
+FROM solr:${SOLR_VERSION}
+ARG SOLR_VERSION
+
+COPY --from=solrwayback --chown=solr \
+/app/solr-${SOLR_VERSION}/server/solr/configsets/netarchivebuilder \
+/opt/solr/server/solr/mycores/netarchivebuilder
