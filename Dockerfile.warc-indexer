@@ -1,0 +1,25 @@
+# This Dockerfile creates a vanilla java container
+# with warc-indexer from solrwayback bundle.
+
+ARG SOLRWAYBACK_VERSION=4.4.2
+ARG SOLRWAYBACK_CHECKSUM=41c1f7ecebc15aade23eb8735db2ab6d
+ARG ECLIPSE_TEMURIN_TAG=8-jre
+
+FROM busybox as solrwayback
+
+WORKDIR /build
+
+ARG SOLRWAYBACK_VERSION
+ARG SOLRWAYBACK_CHECKSUM
+ARG SOLRWAYBACK_RELEASE_URL=https://github.com/netarchivesuite/solrwayback/releases/download/${SOLRWAYBACK_VERSION}/solrwayback_package_${SOLRWAYBACK_VERSION}.zip
+
+RUN wget -q -O bundle.zip ${SOLRWAYBACK_RELEASE_URL} \
+&& echo "${SOLRWAYBACK_CHECKSUM}  bundle.zip" | md5sum -c - \
+&& unzip bundle.zip \
+&& mv solrwayback_package_${SOLRWAYBACK_VERSION} /app \
+&& rm bundle.zip
+
+
+FROM eclipse-temurin:${ECLIPSE_TEMURIN_TAG}
+
+COPY --from=solrwayback /app/indexing /opt/warc-indexer
