@@ -1,8 +1,17 @@
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser, ArgumentTypeError, Namespace
 from contextlib import contextmanager
 from pathlib import Path
 from subprocess import check_call
 from typing import Generator
+
+
+def _threads(argument: str) -> int:
+    number_of_threads = int(argument)
+    if number_of_threads <= 0:
+        raise ArgumentTypeError("Number of threads must be greater than 0")
+    if number_of_threads > 40:
+        raise ArgumentTypeError("Number of threads must be less than or equal to 40")
+    return number_of_threads
 
 
 def _args() -> Namespace:
@@ -19,7 +28,7 @@ def _args() -> Namespace:
     parser.add_argument(
         "--number-of-threads",
         required=True,
-        type=int,
+        type=_threads,
         help="Number of threads to use for indexing",
     )
     return parser.parse_args()
