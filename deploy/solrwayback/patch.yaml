@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solrwayback
+spec:
+  template:
+    spec:
+      volumes:
+        - name: solrwayback-config
+          configMap:
+            name: properties
+      containers:
+        - name: tomcat
+          volumeMounts:
+            - name: solrwayback-config
+              mountPath: /root/solrwayback.properties
+              subPath: solrwayback.properties
+              readOnly: true
+            - name: solrwayback-config
+              mountPath: /root/solrwaybackweb.properties
+              subPath: solrwaybackweb.properties
+              readOnly: true
+          env:
+            - name: TOMCAT_USERNAME
+              value: "admin"
+            - name: TOMCAT_PASSWORD
+              value: "admin"
+            - name: TOMCAT_ALLOW_REMOTE_MANAGEMENT
+              value: "true"

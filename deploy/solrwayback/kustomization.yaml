@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../base/solrwayback
+
+configMapGenerator:
+  - name: properties
+    files:
+      - solrwayback.properties
+      - solrwaybackweb.properties
+
+patches:
+  - path: patch.yaml
