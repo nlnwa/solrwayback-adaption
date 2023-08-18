@@ -29,13 +29,11 @@ FROM tomcat:${TOMCAT_TAG}
 
 ARG SOLRWAYBACK_TOMCAT_VERSION
 
+# TODO: install solrwayback dependencies such as ffmpeg, imagemagick, tesseract-ocr, chromium-browser, etc. 
+
 # CATALINA_HOME is the folder where catalina is installed.
 # The main component of tomcat is called catalina.
 # CATALINA_HOME is set by the tomcat image.
 
 # Copy solrwayback war file to the webapps folder of tomcat.
 COPY --from=solrwayback /app/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback.war ${CATALINA_HOME}/webapps/solrwayback.war
-
-# Copy solrwayback properties files to the ${HOME} folder of the tomcat user which is /root.
-# This is the folder where solrwayback looks for properties files.
-COPY --from=solrwayback /app/properties /root
