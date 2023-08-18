@@ -1,0 +1,67 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: warc-indexer
+spec:
+  template:
+    spec:
+      volumes:
+        - name: status
+          persistentVolumeClaim:
+            claimName: warc-index-tmp
+        - name: temp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi
+        - name: warcs
+          persistentVolumeClaim:
+            claimName: nettarkivet-3
+            readOnly: true
+      containers:
+        - name: warc-indexer
+          env:
+            - name: SOLR_URL
+            # TODO: Change IP-adress to use service name (solr)
+            # A bug in kubernetes config prevents pods on compute nodes
+            # to resolve anything in kubernetes.
+            # It has been reported to the platform team.
+              value: http://10.233.25.160:8983/solr/netarchivebuilder
+            - name: SOLR_CHECK
+              value: "true"
+            - name: SOLR_COMMIT
+              value: "false"
+            - name: THREADS
+              value: "40"
+            - name: INDEXER_MEM
+              value: "2048M"
+            - name: STATUS_ROOT
+              value: "/tmp/status"
+            - name: TMP_ROOT
+              value: "/tmp/scratch"
+          resources:
+            requests:
+              memory: "90G"
+              cpu: "40"
+            limits:
+              memory: "120G"
+              cpu: "80"
+          volumeMounts:
+            - name: temp
+              mountPath: /tmp/scratch
+            - name: status
+              mountPath: /tmp/status
+              subPath: solrwayback-index-log
+      tolerations:
+        - key: "compute"
+          operator: "Equal"
+          value: "true"
+          effect: NoSchedule
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: compute
+                    operator: In
+                    values:
+                      - "true"

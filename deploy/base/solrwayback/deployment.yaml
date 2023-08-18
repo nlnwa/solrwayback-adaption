@@ -20,6 +20,7 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+          # TODO: Add liveness and readiness probes
           # livenessProbe:
           #   initialDelaySeconds: 120
           #   periodSeconds: 10

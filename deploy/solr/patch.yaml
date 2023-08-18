@@ -18,8 +18,8 @@ spec:
         args:
          - -ec
          - |
-           mkdir -p /mnt/data/test
-           chown 8983:8983 /mnt/data/test
+           mkdir -p /mnt/data/workshop-2023
+           chown 8983:8983 /mnt/data/workshop-2023
         volumeMounts:
         - name: data
           mountPath: /mnt/data
@@ -30,4 +30,17 @@ spec:
             # /opt/solr/server/solr/mycores/netarchivebuilder/core.properties
             - name: data
               mountPath: /opt/solr/server/solr/mycores/netarchivebuilder/netarchivebuilder_data
-              subPath: test
+              subPath: workshop-2023
+          env:
+            # SOLR_HEAP sets the -Xmx and -Xms to the same value
+            # If you want to configure them differently, use SOLR_JAVA_MEM
+            # instead and unset SOLR_HEAP.
+            - name: SOLR_HEAP
+              value: "16384m"          
+          resources:
+            requests:
+              memory: "50G"
+              cpu: "10"
+            limits:
+              memory: "50G"
+              cpu: "10"

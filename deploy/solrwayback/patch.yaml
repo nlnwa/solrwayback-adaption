@@ -9,6 +9,10 @@ spec:
         - name: solrwayback-config
           configMap:
             name: properties
+        - name: warcs
+          persistentVolumeClaim:
+            claimName: nettarkivet-3
+            readOnly: true
       containers:
         - name: tomcat
           volumeMounts:
@@ -20,10 +24,6 @@ spec:
               mountPath: /root/solrwaybackweb.properties
               subPath: solrwaybackweb.properties
               readOnly: true
-          env:
-            - name: TOMCAT_USERNAME
-              value: "admin"
-            - name: TOMCAT_PASSWORD
-              value: "admin"
-            - name: TOMCAT_ALLOW_REMOTE_MANAGEMENT
-              value: "true"
+            - name: warcs
+              mountPath: /mnt/warcs/veidemann/validwarcs
+              subPath: veidemann/validwarcs

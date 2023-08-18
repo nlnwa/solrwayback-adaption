@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: warc-indexer
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: warc-indexer
+          image: ghcr.io/nlnwa/warc-indexer:poc
+          command: ["/opt/warc-indexer/warc-indexer.sh"]
