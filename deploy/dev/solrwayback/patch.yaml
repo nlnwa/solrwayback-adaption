@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solrwayback
+spec:
+  template:
+    spec:
+      volumes:
+        - name: solrwayback-config
+          configMap:
+            name: properties
+        - name: warcs
+          persistentVolumeClaim:
+            claimName: warcs
+            readOnly: true
+      containers:
+        - name: tomcat
+          volumeMounts:
+            - name: solrwayback-config
+              mountPath: /root/solrwayback.properties
+              subPath: solrwayback.properties
+              readOnly: true
+            - name: solrwayback-config
+              mountPath: /root/solrwaybackweb.properties
+              subPath: solrwaybackweb.properties
+              readOnly: true
+            - name: warcs
+              mountPath: /mnt/warcs/
