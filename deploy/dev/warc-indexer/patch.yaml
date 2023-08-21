@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: warc-indexer
+spec:
+  template:
+    spec:
+      volumes:
+        - name: temp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
+        - name: warcs
+          persistentVolumeClaim:
+            claimName: warcs
+            readOnly: true
+      containers:
+        - name: warc-indexer
+          env:
+            - name: SOLR_URL
+              value: http://solr:8983/solr/netarchivebuilder
+            - name: SOLR_CHECK
+              value: "true"
+            - name: SOLR_COMMIT
+              value: "false"
+            - name: THREADS
+              value: "2"
+            - name: INDEXER_MEM
+              value: "1024M"
+            - name: STATUS_ROOT
+              value: "/tmp/scratch"
+            - name: TMP_ROOT
+              value: "/tmp/scratch/tmp"
+            - name: INDEXER_CUSTOM
+              value: "--collection test"
+          volumeMounts:
+            - name: temp
+              mountPath: /tmp/scratch
+            - name: warcs
+              mountPath: /mnt/warcs/
+          args:
+            - /mnt/warcs/
