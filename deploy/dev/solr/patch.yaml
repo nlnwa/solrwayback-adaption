@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: solr
+spec:
+  template:
+    spec:
+      volumes:
+        - name: data
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
+      initContainers:
+      # Give `solr` user (id 8983) permissions to data dir
+      - name: volume-permissions
+        image: busybox
+        command:
+        - /bin/sh
+        args:
+         - -ec
+         - |
+           chown 8983:8983 /mnt/data/
+        volumeMounts:
+        - name: data
+          mountPath: /mnt/data
+      containers:
+        - name: solr
+          volumeMounts:
+            # Mount the volume into the data dir as specified by
+            # /opt/solr/server/solr/mycores/netarchivebuilder/core.properties
+            - name: data
+              mountPath: /opt/solr/server/solr/mycores/netarchivebuilder/netarchivebuilder_data
