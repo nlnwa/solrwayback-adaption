@@ -1,0 +1,50 @@
+<h1>Om samlingen</h1>
+<h2>Generell informasjon</h2>
+<p>
+Nasjonalbiblioteket har ansvar for å samle inn og bevare den norske delen av internett, som del av den norske pliktavleveringsloven.
+Vårt mål er å sikre at materialet kan brukes for fremtidige forskningsformål.
+</p>
+
+<br>
+<h4>Samlinger</h4>
+<p>
+I denne tjenesten har vi foreløpig indeksert data som er høstet siden 2019.
+Følgende delsamlinger er indeksert:
+<ul>
+    <li><b>noall</b>: Tverrsnittinnhøsting av .no-domenet (2019-22)</li>
+    <li><b>samisk</b>: Tematisk innhøsting av samisk-relaterte nettsteder (2020-23)</li>
+    <li><b>streetart</b>: Tematisk innhøsting av gatekunst-relaterte nettsteder (2023)</li>
+    <li><b>eventUkraina2022</b>: Hendelsesbasert innhøsting, relatert til Russlands invasjon av Ukraina (2022-)</li>
+    <li><b>valg2001</b>: Hendelsesbasert innhøsting av Stortingsvalget 2001.</li>
+    <li><b>nettaviser</b>: Innhøsting av nettaviser 2019-22</li>
+</ul>
+<br>
+<p>
+Totalt er det indeksert ca 15TB data. Dette tilsvarer ca 1,25% av Nettarkivets totale samling på 2PB.
+</p>
+<br><br>
+
+<h2>Retningslinjer for forskertilgang til Nettarkivet</h2>
+Nedenfor er retningslinjer og vilkår for forskere som innvilges tilgang til Nasjonalbibliotekets nettarkiv. Ved å benytte tjenester forplikter du deg til å overholde disse.
+
+<h4>Data og IKT-sikkerhet</h4><br>
+1.	Det skal ikke kopieres digitalt materiale fra NBs systemer, uten forhåndsavtale.<br>
+2.	Det skal ikke kopieres skadelig eller potensielt skadelig materiale til NBs systemer.<br>
+3.	Du skal ikke dele brukernavn og passord, eller på annen måte overføre dine tilgangsrettigheter til tredjeperson.<br>
+4.	Tjenestene skal kun benyttes for å løse konkrete oppgaver med relevans for din forskning, jf. Åndsverkloven §49 og forskrift til Åndsverkloven §1-10.<br>
+<br><br>
+
+<h4>Forskningsetikk og opphavsrett</h4><br>
+5.	Det forutsettes at forskeren er kjent med og arbeider i tråd med Forskningsetisk veileder for internettforskning fra Den nasjonale forskningsetiske komité for samfunnsvitenskap og humaniora (NESH).<br>
+6.	Foruten nettsteder fra offentlige virksomheter vil det meste av arkivmaterialet være underlagt opphavsrett. Det betyr at materialet ikke kan kopieres, spres, vises eller fremføres for allmennheten, uten samtykke fra den enkelte rettighetshaver.<br>
+7.	Det er ikke tillatt å ta bilde eller på annen måte kopiere informasjon fra tjenestene.<br>
+<br><br>
+
+<h4>Diskresjon om personsensitive opplysninger</h4>
+8.	Dersom forskeren ved bruk av tjenesten kommer over personsensitive opplysninger, forutsettes det at forskeren utøver ansvarsbevissthet og forskningsetisk refleksjon i sin håndtering av informasjonen.<br>
+9.	Dersom forskeren kommer over personsensitiv informasjon, som ikke har konkret relevans for egen forskning, skal forskeren lukke ressursen.<br>
+10.	Materialet skal ikke brukes på måter som kan identifisere personer knyttet til sensitive opplysninger, eller knytte sensisitive opplysninger til personer.<br>
+11.	For å beskytte personer omtalt i materialet, er det ikke tillatt å henvise til eller opplyse om sensitiv informasjon til de personene informasjonen måtte gjelde.<br>
+<br><br>
+
+Dersom vilkårene brytes vil adgangen sperres med øyeblikkelig virkning.

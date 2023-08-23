@@ -7,3 +7,13 @@ namespace: invalidnamespace
 resources:
   - deployment.yaml
   - service.yaml
+
+configMapGenerator:
+  - name: assets
+    files:
+      - assets/nb_logo.svg
+      - assets/about_collection.txt
+      - assets/about_this_archive.txt
+      - assets/search_help.txt
+patches:
+  - path: patch.yaml

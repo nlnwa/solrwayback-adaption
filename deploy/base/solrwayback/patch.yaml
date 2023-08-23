@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solrwayback
+spec:
+  template:
+    spec:
+      volumes:
+        - name: solrwayback-assets
+          configMap:
+            name: assets
+      containers:
+        - name: tomcat
+          volumeMounts:
+            - name: solrwayback-assets
+              mountPath: /assets/nb_logo.svg
+              subPath: nb_logo.svg
+              readOnly: true
+            - name: solrwayback-assets
+              mountPath: /assets/about_collection.txt
+              subPath: about_collection.txt
+              readOnly: true
+            - name: solrwayback-assets
+              mountPath: /assets/about_this_archive.txt
+              subPath: about_this_archive.txt
+              readOnly: true
+            - name: solrwayback-assets
+              mountPath: /assets/search_help.txt
+              subPath: search_help.txt
+              readOnly: true
