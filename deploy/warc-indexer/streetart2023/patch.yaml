@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: warc-indexer
+spec:
+  template:
+    spec:
+      containers:
+        - name: warc-indexer
+          args:
+            - /mnt/warcs/veidemann/validwarcs/streetart2023
+          env:
+            - name: INDEXER_CUSTOM
+              value: "--collection streetart2023"
+          volumeMounts:
+            - name: warcs
+              mountPath: /mnt/warcs/veidemann/validwarcs/streetart2023/streetart2023_202301
+              subPath: veidemann/validwarcs/streetart2023/streetart2023_202301
+            - name: warcs
+              mountPath: /mnt/warcs/veidemann/validwarcs/streetart2023/streetart2023_202302
+              subPath: veidemann/validwarcs/streetart2023/streetart2023_202302
+            - name: warcs
+              mountPath: /mnt/warcs/veidemann/validwarcs/streetart2023/streetart2023_202303
+              subPath: veidemann/validwarcs/streetart2023/streetart2023_202303
+      volumes:
+        - name: warcs
+          persistentVolumeClaim:
+            claimName: nettarkivet-3
+            readOnly: true
