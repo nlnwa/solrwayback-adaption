@@ -24,6 +24,10 @@ RUN wget -q -O bundle.zip ${SOLRWAYBACK_RELEASE_URL} \
 && mv solrwayback_package_${SOLRWAYBACK_VERSION} /app \
 && rm bundle.zip
 
+ARG SOLRWAYBACK_TOMCAT_VERSION
+
+RUN unzip /app/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback.war -d /app/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback
+
 
 FROM tomcat:${TOMCAT_TAG}
 
@@ -35,5 +39,11 @@ ARG SOLRWAYBACK_TOMCAT_VERSION
 # The main component of tomcat is called catalina.
 # CATALINA_HOME is set by the tomcat image.
 
-# Copy solrwayback war file to the webapps folder of tomcat.
-COPY --from=solrwayback /app/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback.war ${CATALINA_HOME}/webapps/solrwayback.war
+# Copy solrwayback to the webapps folder of tomcat.
+COPY --from=solrwayback /app/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback ${CATALINA_HOME}/webapps/solrwayback
+
+# Copy solrwaybackrootproxy to the webapps folder of tomcat.
+COPY --from=solrwayback /app/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/ROOT.war /app/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/ROOT.war
+
+# Copy modified css file to the webapps folder of tomcat.
+COPY /deploy/base/solrwayback/static/app.d3cf2279.css ${CATALINA_HOME}/webapps/solrwayback/static/css/app.d3cf2279.css
