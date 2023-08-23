@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: warc-indexer
+spec:
+  template:
+    spec:
+      volumes:
+        - name: warcs
+          persistentVolumeClaim:
+            claimName: nettarkivet-3
+            readOnly: true
+      containers:
+        - name: warc-indexer
+          args:
+            - /mnt/warcs/veidemann/
+          env:
+            - name: INDEXER_CUSTOM
+              value: "--collection nettaviser"
+          volumeMounts:
+            - name: warcs
+              mountPath: /mnt/warcs/veidemann/validwarcs/nettaviser/nettaviser_2020
+              subPath: veidemann/validwarcs/nettaviser/nettaviser_2020
+            - name: warcs
+              mountPath: /mnt/warcs/veidemann/validwarcs/nettaviser/nettaviser_2021
+              subPath: veidemann/validwarcs/nettaviser/nettaviser_2021
+            - name: warcs
+              mountPath: /mnt/warcs/veidemann/validwarcs/nettaviser/nettaviser_2022
+              subPath: veidemann/validwarcs/nettaviser/nettaviser_2022

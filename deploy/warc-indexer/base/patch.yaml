@@ -13,10 +13,6 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: 2Gi
-        - name: warcs
-          persistentVolumeClaim:
-            claimName: nettarkivet-3
-            readOnly: true
       containers:
         - name: warc-indexer
           env:
