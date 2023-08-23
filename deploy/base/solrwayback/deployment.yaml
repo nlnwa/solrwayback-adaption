@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: tomcat
-          image: solrwayback:local
+          image: ghcr.io/nlnwa/solrwayback:poc
           ports:
             - name: http
               containerPort: 8080
