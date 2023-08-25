@@ -3,6 +3,8 @@ kind: Kustomization
 
 namespace: nettarkivet
 
+nameSuffix: -noall
+
 resources:
   - ../base
 
