@@ -25,3 +25,8 @@ spec:
             - name: warcs
               mountPath: /mnt/warcs/veidemann/validwarcs/noall/noall_2022
               subPath: veidemann/validwarcs/noall/noall_2022
+      volumes:
+        - name: warcs
+          persistentVolumeClaim:
+            claimName: nettarkivet-3
+            readOnly: true
