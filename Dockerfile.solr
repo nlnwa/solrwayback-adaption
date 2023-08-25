@@ -1,0 +1,32 @@
+# This dockerfile configures a vanilla solr 7.7.3 configured with
+# a solrwayback core.
+#
+# See https://solr.apache.org/guide/7_7/solr-cores-and-solr-xml.html
+# for details on how solr cores are configured.
+
+ARG SOLRWAYBACK_VERSION=4.4.2
+ARG SOLR_VERSION=7.7.3
+
+FROM ubuntu:22.04 as solrwayback-bundle
+
+ARG SOLRWAYBACK_VERSION
+ARG SOLRWAYBACK_CHECKSUM
+
+RUN apt-get update \
+    && apt-get install --quiet --assume-yes wget python3
+
+WORKDIR /build
+COPY fetch_solrwayback_bundle.py .
+
+RUN python3 fetch_solrwayback_bundle.py \
+    --solrwayback-version ${SOLRWAYBACK_VERSION} \
+    --destination /app
+
+FROM solr:${SOLR_VERSION}
+
+ARG SOLR_VERSION
+ARG SOLRWAYBACK_VERSION
+
+COPY --from=solrwayback-bundle --chown=solr \
+    /app/solrwayback_package_${SOLRWAYBACK_VERSION}/solr-${SOLR_VERSION}/server/solr/configsets/netarchivebuilder \
+    /opt/solr/server/solr/mycores/netarchivebuilder
