@@ -1,0 +1,48 @@
+# This dockerfile configures a vanilla tomcat container
+# with solrwayback installed and configured with properties
+# from solrwayback bundle.
+#
+# See https://hub.docker.com/_/tomcat for details on how
+# to configure tomcat.
+
+ARG SOLRWAYBACK_VERSION=4.4.2
+ARG SOLRWAYBACK_TOMCAT_VERSION=8.5.60
+ARG TOMCAT_TAG=8.5-jdk8-temurin-jammy
+
+FROM ubuntu:22.04 as solrwayback-bundle
+
+ARG SOLRWAYBACK_VERSION
+ARG SOLRWAYBACK_TOMCAT_VERSION
+ARG SOLRWAYBACK_VERSION
+
+RUN apt-get update \
+    && apt-get install --quiet --assume-yes wget unzip python3
+
+WORKDIR /build
+COPY fetch_solrwayback_bundle.py .
+
+RUN python3 fetch_solrwayback_bundle.py \
+    --solrwayback-version ${SOLRWAYBACK_VERSION} \
+    --destination /app
+RUN unzip /app/solrwayback_package_${SOLRWAYBACK_VERSION}/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback.war \
+    -d /app/solrwayback/
+
+FROM tomcat:${TOMCAT_TAG}
+
+ARG SOLRWAYBACK_TOMCAT_VERSION
+ARG SOLRWAYBACK_VERSION
+
+# TODO: install solrwayback dependencies such as ffmpeg, imagemagick, tesseract-ocr, chromium-browser, etc.
+
+# CATALINA_HOME is the folder where catalina is installed.
+# The main component of tomcat is called catalina.
+# CATALINA_HOME is set by the tomcat image.
+
+# Copy the extracted solrwayback.war file and ROOT.war to the webapps folder of tomcat.
+COPY --from=solrwayback-bundle \
+    /app/solrwayback/ \
+    ${CATALINA_HOME}/webapps/solrwayback
+
+COPY --from=solrwayback-bundle \
+    /app/solrwayback_package_${SOLRWAYBACK_VERSION}/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/ROOT.war \
+    ${CATALINA_HOME}/webapps/ROOT.war
