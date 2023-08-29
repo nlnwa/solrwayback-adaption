@@ -1,0 +1,45 @@
+name: Test release
+
+on:
+  push:
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    name: Create and release docker image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        image-type: [solr, solrwayback, warc-indexer]
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Extract metadata (tags, labels, version) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ matrix.image-type }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=ref,event=branch
+            type=ref,event=pr
+
+      - name: Build and do NOT push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          file: Dockerfile.${{ matrix.image-type }}
+          build-args: |
+            SOLRWAYBACK_VERSION=4.4.2
+            SOLR_VERSION=7.7.3
+            SOLRWAYBACK_TOMCAT_VERSION=8.5.60
+            TOMCAT_TAG=8.5-jdk8-temurin-jammy
+            ECLIPSE_TEMURIN_TAG=8-jre
