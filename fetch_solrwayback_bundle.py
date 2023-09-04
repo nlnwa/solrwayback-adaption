@@ -4,6 +4,7 @@ from urllib.request import urlopen
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 from http import HTTPStatus
+from stat import S_IXUSR, S_IXGRP, S_IXOTH
 
 
 def _args() -> Namespace:
@@ -38,6 +39,12 @@ def _fetch_bundle(solrwayback_version: str, destination: Path) -> None:
                 zip_file.write(response.read())
             with ZipFile(zip_path, "r") as zip_ref:
                 zip_ref.extractall(destination)
+    # set the executable bit for `.sh` files as python removes the original
+    # executable bits when extracting the zip file
+    for shell_script in destination.rglob("*.sh"):
+        mode = shell_script.stat().st_mode
+        mode |= S_IXUSR | S_IXGRP | S_IXOTH
+        shell_script.chmod(mode)
 
 
 def _main() -> None:
