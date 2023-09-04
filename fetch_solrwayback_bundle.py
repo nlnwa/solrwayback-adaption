@@ -4,6 +4,7 @@ from urllib.request import urlopen
 from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 from http import HTTPStatus
+from stat import S_IXUSR, S_IXGRP, S_IXOTH
 
 
 def _args() -> Namespace:
@@ -23,10 +24,9 @@ def _args() -> Namespace:
     return parser.parse_args()
 
 
-def _main() -> None:
-    args = _args()
-    url = f"https://github.com/netarchivesuite/solrwayback/releases/download/{args.solrwayback_version}/solrwayback_package_{args.solrwayback_version}.zip"
-    print(f"Downloading {url} to {args.destination}", flush=True)
+def _fetch_bundle(solrwayback_version: str, destination: Path) -> None:
+    url = f"https://github.com/netarchivesuite/solrwayback/releases/download/{solrwayback_version}/solrwayback_package_{solrwayback_version}.zip"
+    print(f"Downloading {url} to {destination}", flush=True)
 
     with urlopen(url) as response:
         if response.getcode() != HTTPStatus.OK:
@@ -38,7 +38,20 @@ def _main() -> None:
             with zip_path.open("wb") as zip_file:
                 zip_file.write(response.read())
             with ZipFile(zip_path, "r") as zip_ref:
-                zip_ref.extractall(args.destination)
+                zip_ref.extractall(destination)
+    # set the executable bit for `.sh` files as python removes the original
+    # executable bits when extracting the zip file
+    for shell_script in destination.rglob("*.sh"):
+        mode = shell_script.stat().st_mode
+        mode |= S_IXUSR | S_IXGRP | S_IXOTH
+        shell_script.chmod(mode)
+
+
+def _main() -> None:
+    args = _args()
+    _fetch_bundle(
+        solrwayback_version=args.solrwayback_version, destination=args.destination
+    )
 
 
 if __name__ == "__main__":
