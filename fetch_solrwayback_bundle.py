@@ -23,10 +23,9 @@ def _args() -> Namespace:
     return parser.parse_args()
 
 
-def _main() -> None:
-    args = _args()
-    url = f"https://github.com/netarchivesuite/solrwayback/releases/download/{args.solrwayback_version}/solrwayback_package_{args.solrwayback_version}.zip"
-    print(f"Downloading {url} to {args.destination}", flush=True)
+def _fetch_bundle(solrwayback_version: str, destination: Path) -> None:
+    url = f"https://github.com/netarchivesuite/solrwayback/releases/download/{solrwayback_version}/solrwayback_package_{solrwayback_version}.zip"
+    print(f"Downloading {url} to {destination}", flush=True)
 
     with urlopen(url) as response:
         if response.getcode() != HTTPStatus.OK:
@@ -38,7 +37,14 @@ def _main() -> None:
             with zip_path.open("wb") as zip_file:
                 zip_file.write(response.read())
             with ZipFile(zip_path, "r") as zip_ref:
-                zip_ref.extractall(args.destination)
+                zip_ref.extractall(destination)
+
+
+def _main() -> None:
+    args = _args()
+    _fetch_bundle(
+        solrwayback_version=args.solrwayback_version, destination=args.destination
+    )
 
 
 if __name__ == "__main__":
