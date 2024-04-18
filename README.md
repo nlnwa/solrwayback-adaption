@@ -12,7 +12,7 @@ These files must be placed directly under the `/root` folder using either
 overlays at runtime or by building your own image:
 
 ```Dockerfile
-FROM github.com/nlnwa/solrwayback-adaption:latest
+FROM ghcr.io/nlnwa/solrwayback:latest
 
 COPY solrwayback.properties solrwaybackweb.properties /root
 ```
@@ -20,7 +20,7 @@ COPY solrwayback.properties solrwaybackweb.properties /root
 ### Warc indexer
 
 ```shell
-$ docker run ghcr.io/nlnwa/warc-indexer -h
+$ docker run ghcr.io/nlnwa/warc-indexer -h
 
 warc-indexer.sh
 
