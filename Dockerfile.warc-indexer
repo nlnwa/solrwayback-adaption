@@ -1,25 +1,26 @@
-# This Dockerfile creates a vanilla java container
-# with warc-indexer from solrwayback bundle.
+# This Dockerfile creates a vanilla java container with warc-indexer from the solrwayback bundle.
 
-ARG SOLRWAYBACK_VERSION=4.4.2
-ARG ECLIPSE_TEMURIN_TAG=8-jre
+ARG SOLRWAYBACK_VERSION=5.1.0
+ARG ECLIPSE_TEMURIN_TAG=17-jre
 
 FROM ubuntu:22.04 as solrwayback-bundle
 
 ARG SOLRWAYBACK_VERSION
 
-RUN apt-get update \
-    && apt-get install --quiet --assume-yes wget python3
+RUN apt-get update && apt-get install -y \
+    unzip \
+    wget
 
 WORKDIR /build
-COPY fetch_solrwayback_bundle.py .
 
-RUN python3 fetch_solrwayback_bundle.py \
-    --solrwayback-version ${SOLRWAYBACK_VERSION} \
-    --destination /app
+RUN wget -q https://github.com/netarchivesuite/solrwayback/releases/download/${SOLRWAYBACK_VERSION}/solrwayback_package_${SOLRWAYBACK_VERSION}.zip
+RUN mkdir /app \
+    && unzip solrwayback_package_${SOLRWAYBACK_VERSION}.zip \
+    && mv solrwayback_package_${SOLRWAYBACK_VERSION}_MASTER/* /app
+
 
 FROM eclipse-temurin:${ECLIPSE_TEMURIN_TAG}
 
-ARG SOLRWAYBACK_VERSION
+COPY --from=solrwayback-bundle /app/indexing /opt/warc-indexer
 
-COPY --from=solrwayback-bundle /app/solrwayback_package_${SOLRWAYBACK_VERSION}/indexing /opt/warc-indexer
+ENTRYPOINT ["/opt/warc-indexer/warc-indexer.sh"]

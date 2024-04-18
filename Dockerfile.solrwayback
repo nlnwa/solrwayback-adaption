@@ -1,51 +1,52 @@
-# This dockerfile configures a vanilla tomcat container
-# with solrwayback installed and configured with properties
-# from solrwayback bundle.
+# This dockerfile builds a tomcat container including the webapps
+# from the solrwayback bundle.
 #
-# See https://hub.docker.com/_/tomcat for details on how
-# to configure tomcat.
+# See https://hub.docker.com/_/tomcat for details on how to configure tomcat.
 
-ARG SOLRWAYBACK_VERSION=4.4.2
-ARG SOLRWAYBACK_TOMCAT_VERSION=8.5.60
-ARG TOMCAT_TAG=8.5-jdk8-temurin-jammy
+ARG SOLRWAYBACK_VERSION=5.1.0
+ARG SOLRWAYBACK_TOMCAT_VERSION=9
+ARG TOMCAT_TAG=9-jre17-temurin-jammy
 
 FROM ubuntu:22.04 as solrwayback-bundle
 
 ARG SOLRWAYBACK_VERSION
 ARG SOLRWAYBACK_TOMCAT_VERSION
-ARG SOLRWAYBACK_VERSION
 
-RUN apt-get update \
-    && apt-get install --quiet --assume-yes wget unzip python3
+RUN apt-get update && apt-get install -y \
+    unzip \
+    wget
 
 WORKDIR /build
-COPY fetch_solrwayback_bundle.py .
 
-RUN python3 fetch_solrwayback_bundle.py \
-    --solrwayback-version ${SOLRWAYBACK_VERSION} \
-    --destination /app
-RUN unzip /app/solrwayback_package_${SOLRWAYBACK_VERSION}/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback.war \
-    -d /app/solrwayback/
+RUN wget -q https://github.com/netarchivesuite/solrwayback/releases/download/${SOLRWAYBACK_VERSION}/solrwayback_package_${SOLRWAYBACK_VERSION}.zip
+RUN unzip solrwayback_package_${SOLRWAYBACK_VERSION}.zip \
+&& mkdir /webapps \
+&& unzip -d /webapps/solrwayback solrwayback_package_${SOLRWAYBACK_VERSION}_MASTER/tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback.war \
+&& cp solrwayback_package_${SOLRWAYBACK_VERSION}_MASTER/tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/ROOT.war /webapps/ROOT.war
+
 
 FROM tomcat:${TOMCAT_TAG}
 
-ARG SOLRWAYBACK_TOMCAT_VERSION
-ARG SOLRWAYBACK_VERSION
-
-# TODO: install solrwayback dependencies such as ffmpeg, imagemagick, tesseract-ocr, chromium-browser, etc.
+# This is not necessary for solrwayback to work.
+# It is only necessary if you want to use the page preview feature.
+# It increases the size of the image by about 200MB.
+RUN apt-get update && apt-get install -y \
+    chromium-browser \
+    chromium-codecs-ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
 
 # CATALINA_HOME is the folder where catalina is installed.
 # The main component of tomcat is called catalina.
 # CATALINA_HOME is set by the tomcat image.
 
-# Copy the extracted solrwayback.war file and ROOT.war to the webapps folder of tomcat.
+# Copy the extracted solrwayback.war file
+# We use the extracted solrwayback.war to be able to customize the web
+# application (favicon, etc.) at runtime (using overlays).
 COPY --from=solrwayback-bundle \
-    /app/solrwayback/ \
+    /webapps/solrwayback \
     ${CATALINA_HOME}/webapps/solrwayback
 
+# Copy ROOT.war to the webapps folder of tomcat.
 COPY --from=solrwayback-bundle \
-    /app/solrwayback_package_${SOLRWAYBACK_VERSION}/apache-tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/ROOT.war \
+    /webapps/ROOT.war \
     ${CATALINA_HOME}/webapps/ROOT.war
-
-# Set URL icon for the web application
-COPY favicon.ico ${CATALINA_HOME}/webapps/solrwayback/
