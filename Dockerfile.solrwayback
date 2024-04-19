@@ -27,14 +27,6 @@ RUN unzip solrwayback_package_${SOLRWAYBACK_VERSION}.zip \
 
 FROM tomcat:${TOMCAT_TAG}
 
-# This is not necessary for solrwayback to work.
-# It is only necessary if you want to use the page preview feature.
-# It increases the size of the image by about 200MB.
-RUN apt-get update && apt-get install -y \
-    chromium-browser \
-    chromium-codecs-ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
-
 # CATALINA_HOME is the folder where catalina is installed.
 # The main component of tomcat is called catalina.
 # CATALINA_HOME is set by the tomcat image.
