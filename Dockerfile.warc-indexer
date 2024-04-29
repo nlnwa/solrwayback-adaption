@@ -3,7 +3,7 @@
 ARG SOLRWAYBACK_VERSION=5.1.0
 ARG ECLIPSE_TEMURIN_TAG=17-jre
 
-FROM ubuntu:22.04 as solrwayback-bundle
+FROM ubuntu:24.04 as solrwayback-bundle
 
 ARG SOLRWAYBACK_VERSION
 
