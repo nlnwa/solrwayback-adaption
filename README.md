@@ -91,10 +91,10 @@ To run Solr in kubernetes see [Official Kubernetes operator for Apache Solr](htt
 
 Previously this repository contained a Dockerfile that built a [Solr](https://solr.apache.org/guide/solr/latest/index.html) container image (based on the official image) with the "netarchivebuilder" configset from the [SolrWayback bundle version 4.4.2](https://github.com/netarchivesuite/solrwayback/releases/tag/4.4.2).
 
-As of SolrWayback version 5.x, Solr is started in cloud mode which store the configsets in [ZooKeeper](https://zookeeper.apache.org/) and the SolrWayback bundle does not include a configset (besides the default). See the [Solr 9 configset in the warc indexer repository](https://github.com/ukwa/webarchive-discovery/tree/master/warc-indexer/src/main/solr/solr9/discovery/conf) for a starting point to create your own.
+## Docker Compose
+
+See [docker-compose](./docker-compose/).
 
 ## TODO
 
-- Docker compose file and examples.
 - Kubernetes deployment files and examples.
-- Rootless versions of the images.

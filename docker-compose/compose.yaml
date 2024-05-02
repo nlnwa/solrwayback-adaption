@@ -1,0 +1,114 @@
+# See https://docs.docker.com/storage/volumes/
+volumes:
+  # Create a volume for solr data (to persist it between container restarts).
+  solr: {}
+  warcs:
+    external: true
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   o: bind
+    #   device: /path/to/my/warcs
+  warc_indexer_status: {}
+
+services:
+  solr:
+    image: docker.io/solr:9.6.0
+    ports:
+      - "8983:8983"
+    volumes:
+      # See https://solr.apache.org/guide/solr/latest/deployment-guide/solr-in-docker.html#docker-compose
+      - solr:/var/solr:Z
+      - type: tmpfs
+        target: /tmp
+    command:
+      # start in cloud mode (with embedded zookeeper)
+      - "-cloud"
+  
+  wait_for_solr:
+    depends_on:
+      - solr
+    image: docker.io/solr:9.6.0
+    entrypoint: /bin/bash
+    command:
+      - "wait-for-solr.sh"
+      - "--solr-url"
+      - "http://solr:8983"
+    volumes:
+      # Avoid creating volume for this service
+      - type: tmpfs
+        target: /var/solr
+  
+  solrwayback:
+    depends_on:
+      wait_for_solr:
+        condition: service_completed_successfully
+    build: ./solrwayback
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_OPTS="-XX:-UsePerfData"
+    volumes:
+      - warcs:/mnt/warcs:z
+      - type: tmpfs
+        target: /tmp/solrwayback_screenshots
+  
+  # Upload the configset via the Solr Configsets API as "solrwayback"
+  #
+  # See https://solr.apache.org/guide/solr/latest/configuration-guide/configsets-api.html#configsets-create
+  create_configset:
+    depends_on:
+      wait_for_solr:
+        condition: service_completed_successfully
+    build: ./configset
+    command:
+      - "--request"
+      - "PUT"
+      - "--header"
+      - "Content-Type:application/octet-stream"
+      - "--data-binary"
+      - "@/tmp/configset.zip"
+      - "http://solr:8983/api/cluster/configs/solrwayback"
+  
+  # Create a collection via the the Solr Collections API named "solrwayback" using the configset "solrwayback
+  #
+  # See https://solr.apache.org/guide/solr/latest/configuration-guide/collections-api.html
+  # See https://solr.apache.org/guide/solr/latest/deployment-guide/collection-management.html#create
+  create_collection:
+    depends_on:
+      create_configset:
+        condition: service_completed_successfully
+    image: quay.io/curl/curl:latest
+    command:
+      - "--request"
+      - "POST"
+      - "--header"
+      - "Content-Type: application/json"
+      - "--data"
+      - > # The following lines are folded into single line using `>` in YAML (See https://yaml.org/spec/1.1/#folded%20style/syntax)
+        {
+        "name": "solrwayback",
+        "config": "solrwayback",
+        "numShards": 1,
+        "replicationFactor": 1
+        }
+      - "http://solr:8983/api/collections"
+
+  # Index the WARC files in the /mnt/warcs directory
+  warc-indexer:
+    depends_on:
+      create_collection:
+        condition: service_completed_successfully
+    build: ./warc-indexer
+    environment:
+      - SOLR_URL=http://solr:8983/solr/solrwayback
+      - TMP_ROOT=/opt/warc-indexer/tmp
+      - STATUS_ROOT=/opt/warc-indexer/status
+      - INDEXER_CONFIG=/opt/warc-indexer/config.conf
+    volumes:
+      - warcs:/mnt/warcs:z
+      - warc_indexer_status:/opt/warc-indexer/status:z
+      - type: tmpfs
+        target: /opt/warc-indexer/tmp
+    command:
+      - "/mnt/warcs"
