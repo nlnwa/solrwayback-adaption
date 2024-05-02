@@ -19,11 +19,10 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /build
 
 RUN wget -q https://github.com/netarchivesuite/solrwayback/releases/download/${SOLRWAYBACK_VERSION}/solrwayback_package_${SOLRWAYBACK_VERSION}.zip
-RUN unzip solrwayback_package_${SOLRWAYBACK_VERSION}.zip \
+RUN unzip solrwayback_package_${SOLRWAYBACK_VERSION}.zip && mv solrwayback_package_${SOLRWAYBACK_VERSION} bundle/ \
 && mkdir /webapps \
-&& unzip -d /webapps/solrwayback solrwayback_package_${SOLRWAYBACK_VERSION}/tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback.war \
-&& cp solrwayback_package_${SOLRWAYBACK_VERSION}/tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/ROOT.war /webapps/ROOT.war
-
+&& unzip bundle/tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/solrwayback.war -d /webapps/solrwayback \
+&& cp bundle/tomcat-${SOLRWAYBACK_TOMCAT_VERSION}/webapps/ROOT.war /webapps/ROOT.war 
 
 FROM tomcat:${TOMCAT_TAG}
 
@@ -42,3 +41,6 @@ COPY --from=solrwayback-bundle \
 COPY --from=solrwayback-bundle \
     /webapps/ROOT.war \
     ${CATALINA_HOME}/webapps/ROOT.war
+
+# Copy the properties files from the solrwayback bundle to the root user home folder.
+COPY --from=solrwayback-bundle /build/bundle/properties/* /root

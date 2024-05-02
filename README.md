@@ -6,16 +6,11 @@ This repository builds and publishes container images from [SolrWayback releases
 
 ### Solrwayback
 
-The solrwayback container image does not include the configuration files `solrwayback.properties` and `solrwaybackweb.properties`. Use the ones from the official release bundle as a starting point to create your own.
-
-These files must be placed directly under the `/root` folder using either
-overlays at runtime or by building your own image:
-
-```Dockerfile
-FROM ghcr.io/nlnwa/solrwayback:latest
-
-COPY solrwayback.properties solrwaybackweb.properties /root
+```shell
+docker run -p 8080:8080 ghcr.io/nlnwa/solrwayback
 ```
+
+This will start SolrWayback which can be accessed at <http://localhost:8080/solrwayback>, but since the image is configured to access the Solr collection at `http://localhost:8983/solr/netarchivebuilder` it will give you an error message when run in isolation.
 
 ### Warc indexer
 
