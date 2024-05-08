@@ -16,7 +16,7 @@ WORKDIR /build
 RUN wget -q https://github.com/netarchivesuite/solrwayback/releases/download/${SOLRWAYBACK_VERSION}/solrwayback_package_${SOLRWAYBACK_VERSION}.zip
 RUN mkdir /app \
     && unzip solrwayback_package_${SOLRWAYBACK_VERSION}.zip \
-    && mv solrwayback_package_${SOLRWAYBACK_VERSION}_MASTER/* /app
+    && mv solrwayback_package_${SOLRWAYBACK_VERSION}/* /app
 
 
 FROM eclipse-temurin:${ECLIPSE_TEMURIN_TAG}
