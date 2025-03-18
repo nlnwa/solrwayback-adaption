@@ -3,11 +3,11 @@
 #
 # See https://hub.docker.com/_/tomcat for details on how to configure tomcat.
 
-ARG SOLRWAYBACK_VERSION=5.1.0
+ARG SOLRWAYBACK_VERSION=5.2.1
 ARG SOLRWAYBACK_TOMCAT_VERSION=9
 ARG TOMCAT_TAG=9-jre17-temurin-jammy
 
-FROM ubuntu:24.04 as solrwayback-bundle
+FROM ubuntu:24.04 AS solrwayback-bundle
 
 ARG SOLRWAYBACK_VERSION
 ARG SOLRWAYBACK_TOMCAT_VERSION
