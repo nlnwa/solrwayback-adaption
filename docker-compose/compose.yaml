@@ -13,7 +13,7 @@ volumes:
 
 services:
   solr:
-    image: docker.io/solr:9.6.0
+    image: docker.io/solr:9.8.1
     ports:
       - "8983:8983"
     volumes:
@@ -28,7 +28,7 @@ services:
   wait_for_solr:
     depends_on:
       - solr
-    image: docker.io/solr:9.6.0
+    image: docker.io/solr:9.8.1
     entrypoint: /bin/bash
     command:
       - "wait-for-solr.sh"
