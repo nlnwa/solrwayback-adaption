@@ -1,4 +1,4 @@
-FROM docker.io/alpine:latest as build
+FROM docker.io/alpine:latest AS build
 
 RUN apk add --no-cache zip
 WORKDIR /tmp
