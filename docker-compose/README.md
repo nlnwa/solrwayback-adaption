@@ -6,7 +6,7 @@
 
 ```shell
 # Create a volume called "warcs"
-docker create volume warcs
+docker volume create warcs
 
 # Populate the "warcs" volume with files
 docker run --rm -v /path/to/my/warcs:/source:Z  -v warcs:/target busybox sh -c "cp -r /source/* /target"

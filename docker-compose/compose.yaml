@@ -13,7 +13,7 @@ volumes:
 
 services:
   solr:
-    image: docker.io/solr:9.8.1
+    image: docker.io/solr:9.9.0
     ports:
       - "8983:8983"
     volumes:
@@ -28,7 +28,7 @@ services:
   wait_for_solr:
     depends_on:
       - solr
-    image: docker.io/solr:9.8.1
+    image: docker.io/solr:9.9.0
     entrypoint: /bin/bash
     command:
       - "wait-for-solr.sh"
@@ -68,9 +68,9 @@ services:
       - "Content-Type:application/octet-stream"
       - "--data-binary"
       - "@/tmp/configset.zip"
-      - "http://solr:8983/api/cluster/configs/solrwayback"
+      - "http://solr:8983/api/configsets/solrwayback"
   
-  # Create a collection via the the Solr Collections API named "solrwayback" using the configset "solrwayback
+  # Create a collection named "solrwayback" using the configset "solrwayback, via the the Solr Collections API 
   #
   # See https://solr.apache.org/guide/solr/latest/configuration-guide/collections-api.html
   # See https://solr.apache.org/guide/solr/latest/deployment-guide/collection-management.html#create
@@ -105,9 +105,10 @@ services:
       - TMP_ROOT=/opt/warc-indexer/tmp
       - STATUS_ROOT=/opt/warc-indexer/status
       - INDEXER_CONFIG=/opt/warc-indexer/config.conf
+      - 'JAVA_TOOL_OPTIONS=-Xss2m -XX:MaxJavaStackTraceDepth=20000'
     volumes:
-      - warcs:/mnt/warcs:z
-      - warc_indexer_status:/opt/warc-indexer/status:z
+      - warcs:/mnt/warcs
+      - warc_indexer_status:/opt/warc-indexer/status
       - type: tmpfs
         target: /opt/warc-indexer/tmp
     command:

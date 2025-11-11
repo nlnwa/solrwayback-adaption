@@ -6,5 +6,5 @@ COPY conf conf
 RUN cd conf && zip -r /tmp/configset.zip *
 
 
-FROM quay.io/curl/curl:latest
+FROM docker.io/curlimages/curl:8.17.0
 COPY --from=build /tmp/configset.zip /tmp/configset.zip

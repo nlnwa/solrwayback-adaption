@@ -1,4 +1,4 @@
-FROM ghcr.io/nlnwa/solrwayback:main
+FROM harbor.nb.no/nettarkivet/solrwayback:main
 
 COPY solrwayback.properties solrwaybackweb.properties /root/
 
